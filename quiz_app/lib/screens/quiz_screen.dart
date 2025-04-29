@@ -28,7 +28,11 @@ class _QuizScreenState extends State<QuizScreen> {
     bool quizOver = currentQuestion >= sampleQuestions.length;
 
     return Scaffold(
-      appBar: AppBar(title: Text('Quiz App')),
+      appBar: AppBar(
+        title: Text('Quiz App'),
+        centerTitle: true,
+        backgroundColor: Colors.blueAccent,
+        ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: quizOver
