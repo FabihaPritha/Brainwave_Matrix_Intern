@@ -1,6 +1,4 @@
 <!-- Replace this src with your actual logo path -->
-  <img src="news_reader_app/images/logo.jpg" alt="Flash Feed Logo" class="logo">
-
   <h1>Flash Feed</h1>
   <p><strong>Flash Feed</strong> is a modern Flutter-based news application that delivers the latest headlines from multiple categories using the News API. Users can read, search, and bookmark articles for later.</p>
 
