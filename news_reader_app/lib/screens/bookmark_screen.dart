@@ -19,17 +19,25 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
     bookmarkedNews = loadBookmarkedNews();
   }
 
+  // ✅ Updated: Load actual saved article details, not just URL placeholders
   Future<List<NewsArticle>> loadBookmarkedNews() async {
-    final bookmarks = await BookmarkService.getBookmarks();
-    // Create a temporary list of articles from the URLs saved in bookmarks
-    // You could fetch articles again if you want the latest details
-    return bookmarks.map((url) => NewsArticle(title: url, description: 'Bookmarked article', urlToImage: '', url: url)).toList();
+    return await BookmarkService.getBookmarks();  // Updated line
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Bookmarked News")),
+      appBar: AppBar(
+        backgroundColor: Colors.red[900],
+        centerTitle: true,
+        title: const Text(
+          "Bookmarked News",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
       body: FutureBuilder<List<NewsArticle>>(
         future: bookmarkedNews,
         builder: (context, snapshot) {
@@ -38,7 +46,9 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
               return const Center(child: Text("No bookmarks yet"));
             }
             return ListView(
-              children: snapshot.data!.map((e) => NewsCard(article: e)).toList(),
+              children: snapshot.data!
+                  .map((article) => NewsCard(article: article))
+                  .toList(),
             );
           } else if (snapshot.hasError) {
             return Center(child: Text("Error: ${snapshot.error}"));

@@ -104,11 +104,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: selectedCategory == cat
-                                  ? Colors.white
-                                  : Colors.grey,
+                                  ? Colors.red[50]
+                                  : Colors.white,
                             ),
                             onPressed: () => getNews(cat),
-                            child: Text(cat[0].toUpperCase() + cat.substring(1)),
+                            child: Text(
+                              cat[0].toUpperCase() + cat.substring(1),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ),
                     ],

@@ -32,19 +32,32 @@ class _NewsCardState extends State<NewsCard> {
     if (isSaved) {
       await BookmarkService.removeBookmark(widget.article.url);
     } else {
-      await BookmarkService.addBookmark(widget.article.url);
+      await BookmarkService.addBookmark(widget.article);
     }
     checkBookmark();
   }
 
-  void _launchURL(String url) async {
+  void _launchURL(String? url) async {
+    if (url == null || url.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Article URL is missing.")),
+        );
+      }
+      return;
+    }
+
     final uri = Uri.tryParse(url);
+    print('Launching URL: $url'); // Debug console print
+
     if (uri != null && await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Could not launch the article.")),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Could not launch the article.")),
+        );
+      }
     }
   }
 
