@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import '../data/questions.dart';
 
@@ -6,70 +5,124 @@ class QuizScreen extends StatefulWidget {
   const QuizScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _QuizScreenState createState() => _QuizScreenState();
 }
 
 class _QuizScreenState extends State<QuizScreen> {
-  int currentQuestion = 0;
   int score = 0;
+  List<String?> selectedAnswers = List.filled(sampleQuestions.length, null);
 
-  void checkAnswer(String selected) {
-    if (selected == sampleQuestions[currentQuestion].answer) {
-      score++;
+  void selectAnswer(int index, String selectedOption) {
+    if (selectedAnswers[index] == null) {
+      selectedAnswers[index] = selectedOption;
+      if (selectedOption == sampleQuestions[index].answer) {
+        score++;
+      }
+      setState(() {});
     }
-    setState(() {
-      currentQuestion++;
-    });
   }
+
+  bool get quizCompleted =>
+      !selectedAnswers.contains(null); // All questions answered
 
   @override
   Widget build(BuildContext context) {
-    bool quizOver = currentQuestion >= sampleQuestions.length;
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('Quiz App'),
+        title: const Text('Quiz App',
+            style: TextStyle(
+                fontWeight: FontWeight.bold, color: Colors.white)),
         centerTitle: true,
-        backgroundColor: Colors.blueAccent,
-        ),
+        backgroundColor: const Color.fromARGB(255, 70, 10, 86),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: quizOver
+        child: quizCompleted
             ? Center(
-                child: 
-                Column(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Quiz Completed!", style: TextStyle(fontSize: 24)),
-                    Text("Score: $score/${sampleQuestions.length}"),
+                    const Text(
+                      "Quiz Completed!",
+                      style:
+                          TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      "Score: $score/${sampleQuestions.length}",
+                      style: const TextStyle(
+                          fontSize: 25, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
                         setState(() {
-                          currentQuestion = 0;
                           score = 0;
+                          selectedAnswers =
+                              List.filled(sampleQuestions.length, null);
                         });
                       },
-                      child: Text("Restart"),
+                      child: const Text("Restart"),
                     ),
                   ],
                 ),
               )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    sampleQuestions[currentQuestion].questionText,
-                    style: TextStyle(fontSize: 22),
-                  ),
-                  SizedBox(height: 20),
-                  ...sampleQuestions[currentQuestion].options.map((option) {
-                    return ElevatedButton(
-                      onPressed: () => checkAnswer(option),
-                      child: Text(option),
-                    );
-                  }),
-                ],
+            : ListView.builder(
+                itemCount: sampleQuestions.length,
+                itemBuilder: (context, index) {
+                  final question = sampleQuestions[index];
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 20),
+                    elevation: 4,
+                    shadowColor: Colors.deepPurple,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            question.questionText,
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 10),
+                          ...sampleQuestions[index].options.map((option) {
+                            final selected = selectedAnswers[index];
+                            final isSelected = selected == option;
+                            final isCorrect = sampleQuestions[index].answer == option;
+
+                            Icon? feedbackIcon;
+                            if (selected != null) {
+                              if (isSelected && isCorrect) {
+                                feedbackIcon = const Icon(Icons.check, color: Colors.green);
+                              } else if (isSelected && !isCorrect) {
+                                feedbackIcon = const Icon(Icons.close, color: Colors.red);
+                              }
+                            }
+
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4.0),
+                              child: ElevatedButton.icon(
+                                icon: feedbackIcon ?? const SizedBox(width: 0),
+                                label: Text(option),
+                                onPressed: selected == null ? () => selectAnswer(index, option) : null,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: isSelected
+                                      ? (isCorrect ? Colors.green.shade100 : Colors.red.shade100)
+                                      : null,
+                                  foregroundColor: Colors.black,
+                                  alignment: Alignment.centerLeft,
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                                ),
+                              ),
+                            );
+                          }),
+
+
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
       ),
     );
