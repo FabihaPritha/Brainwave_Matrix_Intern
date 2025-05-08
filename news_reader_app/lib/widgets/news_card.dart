@@ -47,23 +47,52 @@ class _NewsCardState extends State<NewsCard> {
       return;
     }
 
-    final uri = Uri.tryParse(url);
-    print('Launching URL: $url'); // Debug console print
+  //   final uri = Uri.tryParse(url);
+  //   print('Launching URL: $url'); // Debug console print
 
-    if (uri != null && await canLaunchUrl(uri)) {
+  //   if (uri != null && await canLaunchUrl(uri)) {
+  //     await launchUrl(uri, mode: LaunchMode.externalApplication);
+  //   } else {
+  //     if (mounted) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(content: Text("Could not launch the article.")),
+  //       );
+  //     }
+  //   }
+  // }
+
+   final uri = Uri.tryParse(url);
+
+  if (uri == null || !(uri.isScheme('http') || uri.isScheme('https'))) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Invalid article URL.")),
+      );
+    }
+    return;
+  }
+
+  try {
+    final canLaunch = await canLaunchUrl(uri);
+    if (canLaunch) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Could not launch the article.")),
-        );
-      }
+      throw 'Cannot launch';
     }
+  } catch (e) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Could not launch the article.")),
+      );
+    }
+    debugPrint("Launch error: $e");
   }
+}
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
+      splashColor: Colors.red.shade200,
       onTap: () => _launchURL(widget.article.url),
       child: Card(
         margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
