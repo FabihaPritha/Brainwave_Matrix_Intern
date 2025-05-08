@@ -1,4 +1,4 @@
-<h1>🧠 Brainwave Matrix Intern Projects</h1>
+<h1>Brainwave Matrix Intern Projects</h1>
 
 <p>
   This repository contains multiple Flutter-based apps. 
